@@ -15,22 +15,6 @@ dotenv.config();
 
 connectDatabase();
 
-const typeDefs = `
-type Query{
-  sayHi:String!
-}
-
-
-`;
-
-const resolvers = {
-  Query: {
-    sayHi: () => {
-      `Hello WorldS`;
-    },
-  },
-};
-
 async function startServer() {
   const app = express();
   const server = new ApolloServer({
