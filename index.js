@@ -7,8 +7,8 @@ import dotenv from "dotenv";
 import { connectDatabase } from "./database/connect-db.js";
 import { mergedType_defs } from "./typeDefs/index.js";
 import { merged_resolvers } from "./resolvers/index.js";
+import { context } from "./utils/context.js";
 
-// import { context } from "./utils/context.js";
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ async function startServer() {
     typeDefs: mergedType_defs,
     resolvers: merged_resolvers,
     introspection: true, // Enable introspection
-    // context,
+    context,
   });
 
   app.use(express.json());

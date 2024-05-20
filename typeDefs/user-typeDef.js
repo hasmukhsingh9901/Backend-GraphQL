@@ -1,9 +1,9 @@
-const userType_defs = `
-
-type User {
+const userType_defs = `#graphql
+  type User {
     id: ID!
-    name: String!
+    username: String!
     email: String!
+    token: String!
   }
 
   type Query {
@@ -11,9 +11,14 @@ type User {
   }
 
   type Mutation {
-    createUser(name: String!, email: String!): User
+    register(registerInput: RegisterInput!): User!
   }
 
+  input RegisterInput {
+    username: String!
+    password: String!
+    confirmPassword: String!
+    email: String!
+  }
 `;
-
-export { userType_defs };
+export {userType_defs}
