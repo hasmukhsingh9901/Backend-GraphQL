@@ -5,10 +5,9 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import dotenv from "dotenv";
 import { connectDatabase } from "./database/connect-db.js";
+import { mergedType_defs } from "./typeDefs/index.js";
+import { merged_resolvers } from "./resolvers/index.js";
 
-// import { mergedResolvers } from "./resolvers/index.js";
-// import { mergedTypeDefs } from "./typeDefs/index.js";
-// import { connectDatabase } from "./database/connect-db.js";
 // import { context } from "./utils/context.js";
 
 dotenv.config();
@@ -18,8 +17,8 @@ connectDatabase();
 async function startServer() {
   const app = express();
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    typeDefs: mergedType_defs,
+    resolvers: merged_resolvers,
     introspection: true, // Enable introspection
     // context,
   });
