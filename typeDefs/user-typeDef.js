@@ -12,6 +12,7 @@ const userType_defs = `#graphql
 
   type Mutation {
     register(registerInput: RegisterInput!): User!
+    login(username:String!,password:String!):User!
   }
 
   input RegisterInput {
@@ -20,5 +21,6 @@ const userType_defs = `#graphql
     confirmPassword: String!
     email: String!
   }
+
 `;
-export {userType_defs}
+export { userType_defs };

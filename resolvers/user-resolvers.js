@@ -1,6 +1,18 @@
 import { User } from "../models/user-model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {
+  validateLoginInput,
+  validateRegisterInput,
+} from "../utils/validators.js";
+
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user.id, email: user.email, username: user.username },
+    process.env.SECRET_KEY,
+    { expiresIn: "1h" }
+  );
+};
 
 const user_resolver = {
   Mutation: {
@@ -34,19 +46,30 @@ const user_resolver = {
       const res = await newUser.save();
 
       // Generate a token
-      const token = jwt.sign(
-        {
-          id: res.id,
-          email: res.email,
-          username: res.username,
-        },
-        process.env.SECRET_KEY,
-        { expiresIn: "1h" }
-      );
-
+      const token = generateToken(res);
       return {
         ...res._doc,
         id: res._id,
+        token,
+      };
+    },
+    login: async (_, { username, password }) => {
+      // const { errors, valid } = validateLoginInput(username, password);
+      const user = await User.findOne({ username });
+      if (!user) {
+        // errors.general = "User not found";
+        throw new Error(`Wrong credentials`);
+      }
+      const match = await bcrypt.compareSync(password, user.password);
+      if (!match) {
+        // errors.general = "Wrong credential";
+        throw new Error(`Wrong credentials`);
+      }
+
+      const token = generateToken(user);
+      return {
+        ...user._doc,
+        id: user._id,
         token,
       };
     },
