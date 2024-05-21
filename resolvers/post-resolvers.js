@@ -4,21 +4,15 @@ import auth_context from "../utils/check-auth.js";
 
 const post_resolver = {
   Query: {
-    getPosts: async (_, __, { user }) => {
-      if (!user) {
-        throw new AuthenticationError("You must be logged in to view posts.");
-      }
+    getPosts: async () => {
       try {
-        const posts = await Post.find();
+        const posts = await Post.find().sort({ createdAt: -1 });
         return posts;
       } catch (error) {
         throw new Error(error);
       }
     },
-    getPost: async (_, { postId }, { user }) => {
-      if (!user) {
-        throw new AuthenticationError("You must be logged in to view a post.");
-      }
+    getPost: async (_, { postId }) => {
       try {
         const post = await Post.findById(postId);
         if (post) {
@@ -35,7 +29,6 @@ const post_resolver = {
     createPost: async (_, { body }, context) => {
       try {
         const user = await auth_context(context);
-        console.log("Post user", user);
         if (body.trim() === "") {
           throw new Error("Post body must be empty");
         }
@@ -46,6 +39,25 @@ const post_resolver = {
         });
         const savedPost = await newPost.save();
         return savedPost;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    deletePost: async (_, { postId }, context) => {
+      try {
+        const user = await auth_context(context);
+
+        const post = await Post.findById(postId);
+        if (!post) {
+          throw new Error("Post not found");
+        }
+
+        if (user.username === post.username) {
+          await Post.deleteOne({ _id: postId });
+          return "Post deleted!";
+        } else {
+          throw new AuthenticationError("Action not allowed");
+        }
       } catch (error) {
         throw new Error(error);
       }
