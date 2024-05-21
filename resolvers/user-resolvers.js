@@ -5,14 +5,15 @@ import {
   validateLoginInput,
   validateRegisterInput,
 } from "../utils/validators.js";
+import { SECRET_KEY } from "../index.js";
 
-const generateToken = (user) => {
+function generateToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, username: user.username },
-    process.env.SECRET_KEY,
+    SECRET_KEY,
     { expiresIn: "1h" }
   );
-};
+}
 
 const user_resolver = {
   Mutation: {
@@ -60,7 +61,7 @@ const user_resolver = {
         // errors.general = "User not found";
         throw new Error(`Wrong credentials`);
       }
-      const match = await bcrypt.compareSync(password, user.password);
+      const match = await bcrypt.compare(password, user.password);
       if (!match) {
         // errors.general = "Wrong credential";
         throw new Error(`Wrong credentials`);
