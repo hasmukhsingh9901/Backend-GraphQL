@@ -1,6 +1,6 @@
 import { Post } from "../models/post-model.js";
 import { AuthenticationError } from "apollo-server-express";
-import auth_context from "../utils/check-auth.js";
+import authContext from "../utils/check-auth.js";
 
 const post_resolver = {
   Query: {
@@ -28,9 +28,9 @@ const post_resolver = {
   Mutation: {
     createPost: async (_, { body }, context) => {
       try {
-        const user = await auth_context(context);
+        const user = await authContext(context);
         if (body.trim() === "") {
-          throw new Error("Post body must be empty");
+          throw new Error("Post body must not be empty");
         }
         const newPost = new Post({
           body,
@@ -38,6 +38,9 @@ const post_resolver = {
           userId: user.id,
         });
         const savedPost = await newPost.save();
+        context.pubsub.publish("NEW_POST", {
+          newPost: savedPost,
+        });
         return savedPost;
       } catch (error) {
         throw new Error(error);
@@ -45,7 +48,7 @@ const post_resolver = {
     },
     deletePost: async (_, { postId }, context) => {
       try {
-        const user = await auth_context(context);
+        const user = await authContext(context);
 
         const post = await Post.findById(postId);
         if (!post) {
@@ -62,6 +65,35 @@ const post_resolver = {
         throw new Error(error);
       }
     },
+    likePost: async (_, { postId }, context) => {
+      try {
+        const { username } = await authContext(context);
+        const post = await Post.findById(postId);
+
+        if (post) {
+          if (post.likes.find((like) => like.username === username)) {
+            // Post already liked, unlike it
+            post.likes = post.likes.filter(
+              (like) => like.username !== username
+            );
+          } else {
+            // Not liked, like it
+            post.likes.push({ username });
+          }
+          await post.save();
+          return post;
+        } else {
+          throw new Error("Post not found");
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    // Subscription: {
+    //   newPost: { 
+    //     subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_POST"),
+    //   },
+    // },
   },
 };
 

@@ -4,7 +4,7 @@ import { AuthenticationError } from "apollo-server-express";
 
 import { SECRET_KEY } from "../index.js";
 
-const auth_context = async (context) => {
+const authContext = async (context) => {
   const token = context.req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
     throw new Error("Unauthorized request");
@@ -16,7 +16,8 @@ const auth_context = async (context) => {
     throw new Error("Invalid access token");
   }
   // context.req.user = user;
-  return user;
+  console.log("Authenticated user:", user.username);
+  return { username: user.username };
 };
 
-export default auth_context;
+export default authContext;

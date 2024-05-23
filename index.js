@@ -15,6 +15,7 @@ connectDatabase();
 
 async function startServer() {
   const app = express();
+  // [ ] const pubsub = new PubSub();
 
   // Apply middleware
   app.use(cors());

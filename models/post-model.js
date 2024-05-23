@@ -1,19 +1,36 @@
 import mongoose from "mongoose";
 
-const { Schema, model } = mongoose;
-
-const postSchema = new Schema(
+const postSchema = new mongoose.Schema(
   {
     body: String,
     username: String,
-    comments: [{ body: String, username: String }],
-    likes: [{ username: String }],
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    userId: String,
+    likes: [
+      {
+        username: String,
+      },
+    ],
+    comments: [
+      {
+        body: String,
+        username: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
-export const Post = model("Post", postSchema);
+postSchema.virtual("likeCount").get(function () {
+  return this.likes.length;
+});
+
+postSchema.virtual("commentCount").get(function () {
+  return this.comments.length;
+});
+
+postSchema.set("toJSON", { virtuals: true });
+postSchema.set("toObject", { virtuals: true });
+
+const Post = mongoose.model("Post", postSchema);
+
+export { Post };
