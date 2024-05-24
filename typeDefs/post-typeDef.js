@@ -7,6 +7,7 @@ const postType_defs = `#graphql
         likes: [Like]!
         likeCount:Int!
         commentCount:Int!
+        createdAt:String!
     }
 
     type Comment {
