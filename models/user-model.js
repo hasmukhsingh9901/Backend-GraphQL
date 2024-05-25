@@ -20,6 +20,9 @@ const userSchema = new Schema(
       lowercase: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
+    profilePicture: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

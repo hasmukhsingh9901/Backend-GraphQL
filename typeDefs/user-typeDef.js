@@ -2,11 +2,15 @@ const userType_defs = `#graphql
   type User {
     id: ID!
     username: String!
+    profilePicture:String
     email: String!
     token: String!
+    createdAt: String!
+
   }
 
   type Query {
+    getUsers:[User]
     getUser(id: ID!): User
   }
 

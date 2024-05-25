@@ -6,6 +6,7 @@ import {
   validateRegisterInput,
 } from "../utils/validators.js";
 import { SECRET_KEY } from "../index.js";
+import { Query } from "mongoose";
 
 function generateToken(user) {
   return jwt.sign(
@@ -16,6 +17,12 @@ function generateToken(user) {
 }
 
 const user_resolver = {
+  Query: {
+    getUsers: async () => {
+      const users = await User.find();
+      return users;
+    },
+  },
   Mutation: {
     register: async (
       _,
@@ -42,6 +49,7 @@ const user_resolver = {
         username,
         email,
         password: hashedPassword,
+        createdAt: new Date().toISOString(),
       });
 
       const res = await newUser.save();
