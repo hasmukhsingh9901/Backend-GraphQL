@@ -9,6 +9,7 @@ import { mergedTypeDefs } from "./graphQL/typeDefs/index.js";
 import context from "./utils/context.js";
 
 
+
 dotenv.config();
 
 export const { SECRET_KEY } = process.env;
