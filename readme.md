@@ -129,12 +129,3 @@ Apollo Server can be integrated with Express to leverage both the robust routing
    cd express-apollo-server
 
 
-.
-├── src
-│   ├── index.js          # Entry point of the application
-│   ├── schema.js         # GraphQL schema definitions
-│   └── resolvers.js      # GraphQL resolvers
-├── .gitignore
-├── package.json
-├── README.md
-└── yarn.lock             # or package-lock.json
