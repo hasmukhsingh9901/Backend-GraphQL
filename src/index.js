@@ -5,8 +5,8 @@ import { ApolloServer } from "apollo-server-express";
 import dotenv from "dotenv";
 import connectDatabase from "./database/db.js";
 import { mergedResolvers } from "./graphQL/resolvers/index.js";
-import { mergedTypeDefs } from "./graphQL/typeDefs/index.js";
 import context from "./utils/context.js";
+import { mergedTypeDefs } from "./graphQL/schema/index.js";
 
 
 dotenv.config();

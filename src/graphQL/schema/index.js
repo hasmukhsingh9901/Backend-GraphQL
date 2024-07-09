@@ -1,7 +1,9 @@
 import { mergeTypeDefs } from "@graphql-tools/merge";
-import { commentTypeDefs } from "./comment.typeDef.js";
-import { postTypeDefs } from "./post.typeDef.js";
-import { userTypeDefs } from "./user.typeDef.js";
+import { userTypeDefs } from "./user.schema.js";
+import { postTypeDefs } from "./post.schema.js";
+import { commentTypeDefs } from "./comment.schema.js";
+
+
 
 const mergedTypeDefs = mergeTypeDefs([
   userTypeDefs,
