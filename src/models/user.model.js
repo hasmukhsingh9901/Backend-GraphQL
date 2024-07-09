@@ -1,63 +1,56 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
   {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     username: {
       type: String,
-  
+      required: true,
       unique: true,
-      lowercase: true,
       trim: true,
-      index: true,
     },
-
     email: {
       type: String,
-     
+      required: true,
       unique: true,
+      trim: true,
       lowercase: true,
-      trim: true,
-    },
-    fullName: {
-      type: String,
-    
-      trim: true,
-      index: true,
-    },
-    avatar: {
-      type: String,
-      
+      match: [/\S+@\S+\.\S+/, "is invalid"],
     },
     password: {
       type: String,
-   
-      trim: true,
+      required: true,
     },
-    // posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    // followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    // following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    // saved: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    refreshToken: {
+    gender: {
       type: String,
+      enum: ["Male", "Female"],
+    },
+    address: {
+      street: {
+        type: String,
+        trim: true,
+      },
+      city: {
+        type: String,
+        trim: true,
+      },
+      zipcode: {
+        type: String,
+        match: [/^\d{5}(-\d{4})?$/, "is invalid"],
+      },
+    },
+    phone: {
+      type: String,
+      // match: [/^\d{10}$/, "is invalid"],
     },
   },
   { timestamps: true }
 );
-
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-
-    
-
-    const hashedPassword = await bcrypt.hash(this.password, 12);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
 
 export const User = mongoose.model("User", userSchema);

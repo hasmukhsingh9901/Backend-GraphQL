@@ -1,55 +1,53 @@
 import { ApiError } from "../../errors/apiError.js";
 import { User } from "../../models/user.model.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs"
 
 const userResolvers = {
+  Query: {
+    users: async () => {
+      return await User.find();
+    },
+    authUser:async(_,__,{user})=>{
+      if(!user) throw new ApiError("You're not authenticated")
+      },
+    user:async(_,{userId})=>{
+      return await User.findById(userId)
+    }
+  },
   Mutation: {
-    registerUser: async (_, { input }) => {
-      try {
-        const { username, email, password, confirmPassword, fullName, avatar } = input;
+    signUp: async (_, { input }) => {
+      const { name, username, email, password, gender, address, phone } = input;
+      const hashedPassword = await bcrypt.hash(password, 12);
 
-        console.log('Input received:', input);
+      const newUser = new User({
+        name,
+        username,
+        email,
+        password: hashedPassword,
+        gender,
+        address,
+        phone,
+      });
 
-        if ([username, email, password, confirmPassword, fullName, avatar].some(
-          (field) => !field || field.trim() === ""
-        )) {
-          throw new ApiError("All fields are required", 400);
+      const result = await newUser.save();
+      const token = jwt.sign(
+        { id: result._id, email: result.email },
+        "eufb43oihf38h4nf39f348hfniendifj930uj94jr4jf93-jfmciwenciosnoi",
+        {
+          expiresIn: "1h",
         }
+      );
 
-        if (password !== confirmPassword) {
-          throw new ApiError("Passwords do not match", 400);
-        }
+      
 
-        const newUser = await User.create({
-          username,
-          email,
-          password,
-          fullName,
-          avatar
-        });
-
-        console.log('New user created:', newUser);
-
-        const token = jwt.sign(
-          { id: newUser.id, email: newUser.email, username: newUser.username },
-          process.env.JWT_SECRET,
-          { expiresIn: "1d" }
-        );
-
-        const user = { ...newUser._doc, id: newUser._id, token };
-        console.log('User to return:', user);
-
-        return {
-          message: "User Registered Successfully!",
-          user,
-        };
-      } catch (error) {
-        console.error('Error registering user:', error);
-        throw new ApiError(error.message, 500);
-      }
+      return {
+        ...result._doc,
+        id: result._id,
+        token,
+      };
     },
   },
-  Query: {},
 };
 
 export { userResolvers };
